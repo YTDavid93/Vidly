@@ -1,4 +1,3 @@
-import { error } from "console";
 import express, { Express, Request, Response } from "express";
 import { z } from "zod";
 
@@ -6,9 +5,9 @@ const app: Express = express();
 app.use(express.json());
 
 type Genre = {
-  id: number
+  id: number;
   name: string;
-}
+};
 
 const genres = [
   { id: 1, name: "Action" },
@@ -49,7 +48,8 @@ app.post("/api/genres", (req: Request, res: Response) => {
 // Handaling HTTP put request
 app.put("/api/genres/:id", (req: Request, res: Response) => {
   const genre = genres.find((genre) => genre.id === parseInt(req.params.id));
-  if (!genre) return res.status(404).send("The genre with the given Id was not found.");
+  if (!genre)
+    return res.status(404).send("The genre with the given Id was not found.");
 
   //validate
   const { error } = validateGenre(req.body);
@@ -57,7 +57,18 @@ app.put("/api/genres/:id", (req: Request, res: Response) => {
   // if invalid return - 400 bad request
 
   genre.name = req.body.name;
-  res.send(genre)
+  res.send(genre);
+});
+
+// Handaling Delete request
+app.delete("/api/genres/:id", (req: Request, res: Response) => {
+  const genre = genres.find((genre) => genre.id === parseInt(req.params.id));
+  if (!genre) return res.status(404).send("The genre with the given Id was not found.");
+
+  const index = genres.indexOf(genre);
+  genres.splice(index, 1);
+
+  res.send(genre);
 });
 
 const port = process.env.PORT || 3000;
