@@ -1,23 +1,7 @@
 import express, { Request, Response } from "express";
-import mongoose from "mongoose";
-import { z } from "zod";
-
+import { Genre, validateGenre } from "../models/genre";
+ 
 const router = express.Router();
-
-type Genre = {
-  id: number;
-  name: string;
-};
-
-
-const Genre = mongoose.model("Genre", new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minlength: 5,
-    maxlength: 50
-  },
-}));
 
 router.get("/", async (req: Request, res: Response) => {
   const genres = await Genre.find();
@@ -73,13 +57,5 @@ router.delete("/:id", async (req: Request, res: Response) => {
 
   res.send(genre);
 });
-
-const validateGenre = (genre: Genre) => {
-  const schema = z.object({
-    name: z.string().min(1, { message: "Genre name is required" }),
-  });
-
-  return schema.safeParse(genre);
-};
 
 export default router;

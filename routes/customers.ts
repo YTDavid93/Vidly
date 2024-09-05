@@ -1,36 +1,8 @@
 
 import express, { Request, Response } from "express";
-import mongoose from "mongoose";
-import { number, z } from "zod";
-
-
-type Customer = {
-    name: string,
-    isGold: boolean,
-    phone: string
-}
+import { Customer, validateCustomer } from "../models/customer";
 
 const customerRouter = express.Router();
-
-const customerSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minlength: 5,
-    maxlength: 50,
-  },
-  isGold: {
-    type: Boolean,
-    default: false,
-  },
-  phone: {
-    type: String,
-    minlength: 5,
-    maxlength: 50,
-  },
-});
-
-const Customer = mongoose.model("Customer", customerSchema);
 
 customerRouter.get("/", async (req: Request, res: Response) => {
    const customers =  await Customer.find();
@@ -92,16 +64,6 @@ customerRouter.delete("/:id", async (req: Request, res: Response) => {
 
    res.send(customer)
 })
-
-const validateCustomer = (genre: Customer) => {
-  const schema = z.object({
-    name: z.string().min(5, { message: "name is reuired"}).max(50),
-    phone: z.string().min(5, { message: "Phone number is required" }).max(50),
-    isGold: z.boolean()
-  });
-
-  return schema.safeParse(genre);
-};
 
 
 export default customerRouter;
